@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="eu.h2020.helios_social.modules.neurobehaviour">
+
+    <!-- Using foreground service for Accelerometer Sensor - API 28 requeriment -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"></uses-permission>
+
+</manifest>
+
