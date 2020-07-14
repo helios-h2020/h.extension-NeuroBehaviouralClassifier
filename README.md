@@ -16,7 +16,7 @@
 <img src="./doc/Esquema-Neurobehavioural.png" alt="HELIOS Neuro-behavioral classifier module" />
 
 <h2>Cloning repository</h2>
-<p>git clone https://scm.atosresearch.eu/ari/helios_group/neurobehaviouralclassifier.git</p>
+<p>git clone https://github.com/helios-h2020/h.extension-NeuroBehaviouralClassifier.git</p>
 
 <h2> </h2>
 <h2>Neurobehaviour module</h2>
