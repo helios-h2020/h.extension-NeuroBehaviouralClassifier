@@ -29,8 +29,9 @@
 <ul>
     <li>In order to use Python wrapper feature, please edit your <b>local.properties</b> file and add:</li>
 </ul>
-        > chaquopy.license=ADCOZh9lSwXa7BArj2j1gni5JznpJJWNZ6nbNhR9FTLx
-        > chaquopy.applicationId=eu.h2020.helios_social.heliostestclient
+
+> chaquopy.license=ADCOZh9lSwXa7BArj2j1gni5JznpJJWNZ6nbNhR9FTLx
+> chaquopy.applicationId=eu.h2020.helios_social.heliostestclient
     <br>
 <ul>
     <li>Finally, rebuild your project in Android Studio.</li>
