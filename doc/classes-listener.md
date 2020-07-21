@@ -19,7 +19,7 @@
         @Override
         public void sendingMsg(HeliosMessage message, Context context)
         @Override
-        public int[] egoAlterTrust(String alterUser, Float previousTrust, Long lastTime)
+        public int[] egoAlterTrust(String alterUser)
         @Override
         public void createCsv(String fileType, Context context, String userName)
         @Override

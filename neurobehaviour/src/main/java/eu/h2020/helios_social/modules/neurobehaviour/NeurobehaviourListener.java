@@ -110,8 +110,8 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
     }
 
     @Override
-    public int[] egoAlterTrust(String alterUser, Float previousTrust, Long lastTime) {
-        Log.v("listen", "EGO-ALTER TRUST - Alter: " + alterUser + " Previous trust: " + previousTrust + " - Timestamp: " + lastTime.toString());
+    public int[] egoAlterTrust(String alterUser) {
+        Log.v("listen", "EGO-ALTER TRUST - Alter: " + alterUser);
         int[] dummyArray = {4, 5, 3, 6};
         return dummyArray;
     }

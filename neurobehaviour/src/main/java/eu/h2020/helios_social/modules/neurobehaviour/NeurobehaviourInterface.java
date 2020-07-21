@@ -22,7 +22,7 @@ public interface NeurobehaviourInterface {
 
     //Sentimental analysis of Ego - Alter relationship
     //based on previous Trust value and new communications analysis
-    int[] egoAlterTrust (String alterUser, Float previousTrust, Long lastTime);
+    int[] egoAlterTrust (String alterUser);
 
     //External data storage to save neurobehavioural metrics
     void createCsv(String file, Context context, String userName);

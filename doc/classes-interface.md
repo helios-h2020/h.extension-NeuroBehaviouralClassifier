@@ -14,7 +14,7 @@
         void sendingMsg (HeliosMessage message, Context context);<br>
         //Sentimental analysis of Ego - Alter relationship
         //based on previous Trust value and new communications analysis
-        int[] egoAlterTrust (String alterUser, Float previousTrust, Long lastTime);<br>
+        int[] egoAlterTrust (String alterUser);<br>
         //External data storage to save neurobehavioural metrics used by the module
         void createCsv(String file, Context context, String userName);
         void writeData(String data);
