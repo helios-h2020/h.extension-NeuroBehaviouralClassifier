@@ -8,19 +8,19 @@
 </ul>
 
 <h3>Calling from Trust module</h3>
-<code>
-	//Using Neurobehaviour module listener class to send info about chat communications
-	import eu.h2020.helios_social.modules.neurobehaviour.NeurobehaviourListener;
-	//Listener init
-	private NeurobehaviourListener listen;
-</code>
+
+> //Using Neurobehaviour module listener class to send info about chat communications
+> import eu.h2020.helios_social.modules.neurobehaviour.NeurobehaviourListener;
+> //Listener init
+> private NeurobehaviourListener listen;
 
 <p> <br><b>onCreate method</b></p>
 
-<code>listen = new NeurobehaviourListener();</code>
+> listen = new NeurobehaviourListener();
 
 <p> <br><b>Updating Ego - Alter Trust value</b></p>
-<code>int[] newTrustValue = listen.egoAlterTrust(String alterUser);</code>
+
+> int[] newTrustValue = listen.egoAlterTrust(String alterUser);
 <br>
 <br>
 <p><b>egoAlterTrust</b> function returns an array with values to calculate <b>new Trust value</b> in Trust module:</p>

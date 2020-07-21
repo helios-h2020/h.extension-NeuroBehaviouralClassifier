@@ -86,15 +86,14 @@
 <p>After user has sent or read a message, Neurobehaviour module sends sensor metrics (acceleration average) using <b>SensorValueListener</b> interface (Context module)</p>
 
 <p><b>DataHandler.java</b></p>
-<code>
-	//Using Context module interface to send acceleration value
-	import eu.h2020.helios_social.core.sensor.ext.DeviceSensor;
-</code>
-<code>
-	obj.msgId = msgId;
-	obj.accelAverage = averageAccel;
-	deviceSensor.receiveValue(obj);
-</code>
+
+> //Using Context module interface to send acceleration value
+> import eu.h2020.helios_social.core.sensor.ext.DeviceSensor;
+> 
+> obj.msgId = msgId;
+> obj.accelAverage = averageAccel;
+> deviceSensor.receiveValue(obj);
+
 
 
 <h2> </h2>
