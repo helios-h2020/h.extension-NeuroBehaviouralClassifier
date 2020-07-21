@@ -30,10 +30,8 @@
     <li>In order to use Python wrapper feature, please edit your <b>local.properties</b> file and add:</li>
 </ul>
     <p style="margin-left:30px">
-    <code>
-        chaquopy.license=ADCOZh9lSwXa7BArj2j1gni5JznpJJWNZ6nbNhR9FTLx
-		chaquopy.applicationId=eu.h2020.helios_social.heliostestclient
-    </code>
+        > chaquopy.license=ADCOZh9lSwXa7BArj2j1gni5JznpJJWNZ6nbNhR9FTLx
+		> chaquopy.applicationId=eu.h2020.helios_social.heliostestclient
     </p>
     <br>
 <ul>
