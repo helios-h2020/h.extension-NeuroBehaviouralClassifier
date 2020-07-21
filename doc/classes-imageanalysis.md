@@ -23,14 +23,16 @@
 </ul>
 
 > public class SentimentalAnalysis extends AppCompatActivity {
->> public void runThread(final Context context, final String fileName, final HeliosMessageListener messageListener, final HeliosTopic topic, final HeliosMessage message)
->> public int realImageWidth(String resource)
->> private String getExtension(String word)
->> private void textAnalysis (Context context, String message, HeliosMessageListener messageListener, HeliosTopic topic)
->> private void pythonAnalysis (Context context, String script, String picture, Float scale, ImageView imageView, HeliosMessageListener messageListener, HeliosTopic topic)
->> private void paintingImage(PyObject squares, PyObject emotions, PyObject scores, String imageResource, Float scale, ImageView imageView, Context context, HeliosMessageListener messageListener, HeliosTopic topic)
->> public String getDate(long time)
->> private void saveImageData (Context context, int numFaces, String emotionsData, String scoreData)
->> private void saveTextData (Context context, PyObject origText, PyObject engText, PyObject tags, PyObject emotions) 
+>   public void runThread(final Context context, final String fileName, final HeliosMessageListener messageListener, final HeliosTopic topic, final HeliosMessage message)
+>   public int realImageWidth(String resource)
+>   private String getExtension(String word)
+>   private void textAnalysis (Context context, String message, HeliosMessageListener messageListener, HeliosTopic topic)
+>   private void pythonAnalysis (Context context, String script, String picture, Float scale, ImageView imageView, HeliosMessageListener messageListener, HeliosTopic topic)
+>   private void paintingImage(PyObject squares, PyObject emotions, PyObject scores, String imageResource, Float scale, ImageView imageView, Context context, HeliosMessageListener messageListener, HeliosTopic topic)
+>   public String getDate(long time)
+>   private void saveImageData (Context context, int numFaces, String emotionsData, String scoreData)
+>   private void saveTextData (Context context, PyObject origText, PyObject engText, PyObject tags, PyObject emotions) 
 > }
+>
+
 	
