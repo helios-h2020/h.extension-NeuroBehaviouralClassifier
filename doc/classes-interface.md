@@ -2,7 +2,7 @@
 
 <p>This interface class define functions used in the listener and its parameters</p>
 
-'''java
+```java
 import eu.h2020.helios_social.core.messaging.HeliosMessage;
 public interface NeurobehaviourInterface {
    //Accelerometer - Events to call when user open a message to write or read it
@@ -19,5 +19,5 @@ public interface NeurobehaviourInterface {
    void createCsv(String file, Context context, String userName);
    void writeData(String data);
 }
-'''
+```
 
