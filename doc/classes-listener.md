@@ -19,7 +19,7 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
    @Override
    public void sendingMsg(HeliosMessage message, Context context)
    @Override
-   public int[] egoAlterTrust(String alterUser)
+   public String[][] egoAlterTrust(String alterUser)
    @Override
    public void createCsv(String fileType, Context context, String userName)
    @Override

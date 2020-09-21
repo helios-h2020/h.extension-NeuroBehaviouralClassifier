@@ -21,8 +21,8 @@ public interface NeurobehaviourInterface {
     void sendingMsg (HeliosMessage message, Context context);
 
     //Sentimental analysis of Ego - Alter relationship
-    //based on previous Trust value and new communications analysis
-    int[] egoAlterTrust (String alterUser);
+    //based on previous values and new communications analysis
+    String[][] egoAlterTrust (String alterUser);
 
     //External data storage to save neurobehavioural metrics
     void createCsv(String file, Context context, String userName);

@@ -3,7 +3,7 @@
 <p>This function re-calculates sentimental metrics for one period of time according to:</p>
 
 <ul>
-	<li>Previous Trust metrics</li>
+	<li>Previous values</li>
 	<li>New metadata from Ego - Alter communications</li>
 </ul>
 
@@ -20,13 +20,19 @@
 
 <p> <br><b>Updating Ego - Alter Trust value</b></p>
 
-> int[] newTrustValue = listen.egoAlterTrust(String alterUser);
+> String[][] newTrustValue = listen.egoAlterTrust(String alterUser);
 <br>
 <br>
-<p><b>egoAlterTrust</b> function returns an array with values to calculate <b>new Trust value</b> in Trust module:</p>
+<p><b>egoAlterTrust</b> function returns a matrix with values to calculate <b>new Trust value</b> in Trust module according to each context:</p>
 <ul>
-	<li>Attention</li>
-	<li>Arousal</li>
-	<li>Valence</li>
-	<li>Personality</li>
+	<li>Arousal: positive / negative</li>
+	<li>Valence: positive / negative</li>
+	<li>Attention: low / medium / high</li>
 </ul>
+<p><b>Matrix of values to return:</b></p>
+
+> String[][] dummyMatrix = {
+>   {"Context", "Valence", "Arousal", "Attention"},
+>   {"Home", "Positive", "Positive", "Medium"},
+>   {"Work", "Positive", "Negative", "High"}
+> };

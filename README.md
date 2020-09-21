@@ -72,10 +72,9 @@
 <p>Neurobehaviour module extracts metrics from user behaviour:</p>
 
 <ul>
-	<li>Attention</li>
-	<li>Arousal</li>
-	<li>Valence</li>
-	<li>Personality</li>
+	<li>Arousal: positive / negative</li>
+	<li>Valence: positive / negative</li>
+	<li>Attention: low / medium / high</li>
 </ul>
 
 <p>Calling to <b>egoAlterTrust</b> function</p>

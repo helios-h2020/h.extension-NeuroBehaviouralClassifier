@@ -109,11 +109,19 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
         Log.v("cv", "File: " + message.getMediaFileName());
     }
 
-    @Override
-    public int[] egoAlterTrust(String alterUser) {
+ 	@Override
+    public String[][] egoAlterTrust(String alterUser) {
+
         Log.v("listen", "EGO-ALTER TRUST - Alter: " + alterUser);
-        int[] dummyArray = {4, 5, 3, 6};
-        return dummyArray;
+        //Consulte last stored values in module
+        //Consulte current Context > Context module
+        //Calculate new values
+        String[][] dummyMatrix = {
+                {"Context", "Valence", "Arousal", "Attention"},
+                {"Home", "Positive", "Positive", "Medium"},
+                {"Work", "Positive", "Negative", "High"}
+                            };
+        return dummyMatrix;
     }
 
     @Override
