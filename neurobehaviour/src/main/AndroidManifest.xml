@@ -4,5 +4,9 @@
     <!-- Using foreground service for Accelerometer Sensor - API 28 requeriment -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"></uses-permission>
 
+    <application>
+        android:name="com.chaquo.python.android.PyApplication"
+    </application>
+
 </manifest>
 

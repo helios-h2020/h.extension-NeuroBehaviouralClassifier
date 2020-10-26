@@ -7,10 +7,7 @@ import eu.h2020.helios_social.core.messaging.HeliosMessage;
 public interface NeurobehaviourInterface {
    //Accelerometer - Events to call when user open a message to write or read it
    void writingMsg (String alterUser, Context context);
-   void readingChat (String alterUser, Context context);
-   void chatClosed (String alterUser);
    //Sentimental analysis for media chat content
-   void inboxMsg (HeliosMessage message, Context context);
    void sendingMsg (HeliosMessage message, Context context);
    //Sentimental analysis of Ego - Alter relationship
    //based on previous values and new communications analysis

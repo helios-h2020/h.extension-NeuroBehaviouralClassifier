@@ -7,6 +7,10 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,10 +22,6 @@ import java.util.Date;
 import eu.h2020.helios_social.core.messaging.HeliosMessage;
 
 //Acceleration Class
-import eu.h2020.helios_social.modules.neurobehaviour.Acceleration;
-
-import static android.content.Context.NOTIFICATION_SERVICE;
-import static android.os.ParcelFileDescriptor.MODE_APPEND;
 
 
 public class NeurobehaviourListener implements NeurobehaviourInterface {
@@ -99,8 +99,61 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
 
     @Override
     public void inboxMsg(HeliosMessage message, Context context) {
-        Log.v("cv", "MESSAGE RECEIVED IN NEUROBEHAVIOUR MODULE: " + message.getMessage());
-        Log.v("cv", "File: " + message.getMediaFileName());
+        Log.v("log", "MESSAGE RECEIVED IN NEUROBEHAVIOUR MODULE FROM OTHER USER: " + message.getMessage());
+        Log.v("log", "File: " + message.getMediaFileName());
+        //Writing data in text file
+        String stringMsg = message.getMessage();
+        Log.v("log", "Mensaje recibido: " + stringMsg);
+
+        //Writing response messages from other users in Text log file
+        boolean fileReady = GetCsvTextReady();
+        if (fileReady) {
+            receivedData(stringMsg);
+        } else {
+            Log.v("log", "El archivo CSV no está listo");
+            createCsv("Text", context, getUserName());
+            SetCsvTextReady(true);
+            receivedData(stringMsg);
+        }
+    }
+
+    private void receivedData(String stringMsg) {
+        try {
+            //LAB - Append data to file > append = true
+            fileWriter  = new FileWriter(textFile, true);
+            bfWriter = new BufferedWriter(fileWriter);
+
+            bfWriter.write(separator + " Timestamp ; Time ; From ; Received message ; File ; Sent at " + separator);
+
+            Date date = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss Z");
+            String time = formatter.format(date);
+
+            //Timestamp
+            // Current time in Milliseconds
+            long actualTimeMillis = System.currentTimeMillis();
+            long timestamp = actualTimeMillis / 1000;
+
+            //Parse received message
+            try {
+                JSONObject json = new JSONObject(stringMsg);
+                String user = json.getString("senderName");
+                String msg = json.getString("msg");
+                String hora = json.getString("ts");
+                String media = "";
+                if (msg.contains("Image"))
+                        media = json.getString("mediaFileName");
+                bfWriter.write(" " + timestamp + " ; " + time + " ; " + user + " ; " + msg + " ; " + media + " ; " + hora + " ; " + separator + separator);
+                bfWriter.close();
+                Log.v("log", "Writing text message data");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.v("log", "Error extrayendo el JSON: " + e.toString());
+            }
+
+        } catch (IOException e) {
+            Log.v("log", "Error writing text data in file: " + e.toString());
+        }
     }
 
     @Override
@@ -109,7 +162,7 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
         Log.v("cv", "File: " + message.getMediaFileName());
     }
 
- 	@Override
+    @Override
     public String[][] egoAlterTrust(String alterUser) {
 
         Log.v("listen", "EGO-ALTER TRUST - Alter: " + alterUser);
@@ -145,15 +198,15 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
                     try {
                         accelFile.createNewFile();
                     } catch (IOException e) {
-                        Log.v("storage", "Error creating csv file: " + e.toString());
+                        Log.v("log", "Error creating csv file: " + e.toString());
                     }
-                    Log.v("Storage", "Creating Acceleration.csv file in " + path);
+                    Log.v("log", "Creating Acceleration.csv file in " + path);
 
                     String header = "Start time: ;" + time + separator;
                     header += "User: ;" + userName + separator;
                     header += " ;" + separator;
-                    header += "TIMESTAMP;TIME;ACCELERATION;ACCEL AVERAGE" + separator;
-                    header += "ms offset in Sensor of device; App time;m/s2;m/s2" + separator;
+                    header += " OFFSET ; TIMESTAMP ; TIME ; ACCELERATION ; ACCEL AVERAGE " + separator;
+                    header += " ms offset in Sensor of device; seconds Unix time; App time;m/s2;m/s2" + separator;
                     header += " ;" + separator;
 
                     //LAB - Open stream to file
@@ -169,7 +222,7 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
                         //LAB - Start to write data
                         SetCsvReady(true);
                     } catch (IOException e) {
-                        Log.v("storage", "Error writing Header: " + e.toString());
+                        Log.v("log", "Error writing Header: " + e.toString());
                     }
 
                     break;
@@ -187,7 +240,7 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
                     String imageHeader = "Sending images start: ;" + time + separator;
                     imageHeader += "User: ;" + userName + separator;
                     imageHeader += " ;" + separator;
-                    imageHeader += "TIME;FILE;NUM OF FACES;EMOTION / SCORE" + separator;
+                    imageHeader += " TIMESTAMP ; TIME ; SENDER ; FILE ; NUM OF FACES ; EMOTIONS ; SCORES " + separator;
                     imageHeader += " ;" + separator;
 
                     //LAB - Open stream to file
@@ -203,7 +256,7 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
                         //LAB - Start to write data
                         SetCsvImageReady(true);
                     } catch (IOException e) {
-                        Log.v("storage", "Error writing images Header: " + e.toString());
+                        Log.v("log", "Error writing images Header: " + e.toString());
                     }
 
                     break;
@@ -214,14 +267,14 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
                     try {
                         textFile.createNewFile();
                     } catch (IOException e) {
-                        Log.v("storage", "Error creating csv file for Text Analysis: " + e.toString());
+                        Log.v("log", "Error creating csv file for Text Analysis: " + e.toString());
                     }
-                    Log.v("Storage", "Creating TextAnalysis.csv file in " + textPath);
+                    Log.v("log", "Creating TextAnalysis.csv file in " + textPath);
 
                     String textHeader = "Sending text message start: ;" + time + separator;
                     textHeader += "User: ;" + userName + separator;
                     textHeader += " ;" + separator;
-                    textHeader += "TIME;MESSAGE;TRANSLATED MSG; TAGS; EMOTION / SCORE" + separator;
+                    textHeader += " TIMESTAMP ; TIME ; SENDER ; MESSAGE ; TRANSLATED MSG ; TAGS ; CLASSIFICATION ; POSITIVE SCORE ; NEGATIVE SCORE " + separator;
                     textHeader += " ;" + separator;
 
                     //LAB - Open stream to file
@@ -237,14 +290,17 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
                         //LAB - Start to write data
                         SetCsvTextReady(true);
                     } catch (IOException e) {
-                        Log.v("storage", "Error writing text file Header: " + e.toString());
+                        Log.v("log", "Error writing text file Header: " + e.toString());
                     }
 
+                    break;
+
+                case "Audio":
                     break;
             }
         } else {
             // External storage is not usable
-            Log.v("Storage", "ERROR: Unable to mount external memory.");
+            Log.v("log", "ERROR: Unable to mount external memory.");
             Toast.makeText(context, "SDCard no disponible", Toast.LENGTH_SHORT).show();
         }
     }
@@ -254,16 +310,16 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
     public void writeData(String data) {
 
         if (csvReady) {
-            Log.v("storage", "csvReady = TRUE");
+            Log.v("accel", "csvReady = TRUE");
             try {
                 //LAB - Append data to file > append = true
                 fileWriter  = new FileWriter(accelFile, true);
                 bfWriter = new BufferedWriter(fileWriter);
                 bfWriter.write(data);
                 bfWriter.close();
-                Log.v("storage", "Writing data");
+                Log.v("accel", "Writing data");
             } catch (IOException e) {
-                Log.v("storage", "Error writing data in file: " + e.toString());
+                Log.v("accel", "Error writing data in file: " + e.toString());
             }
         }
     }
@@ -277,9 +333,9 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
                 bfWriter = new BufferedWriter(fileWriter);
                 bfWriter.write(data);
                 bfWriter.close();
-                Log.v("storage", "Writing image data");
+                Log.v("log", "Writing image data");
             } catch (IOException e) {
-                Log.v("storage", "Error writing image data in file: " + e.toString());
+                Log.v("log", "Error writing image data in file: " + e.toString());
             }
         }
 
@@ -287,19 +343,42 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
 
     public void writeTextData(String data) {
 
-        if (csvTextReady) {
+        Log.v("log", "Método log de Textos");
+        boolean fileReady = GetCsvTextReady();
+        if (fileReady) {
             try {
                 //LAB - Append data to file > append = true
                 fileWriter  = new FileWriter(textFile, true);
                 bfWriter = new BufferedWriter(fileWriter);
                 bfWriter.write(data);
                 bfWriter.close();
-                Log.v("storage", "Writing text message data");
+                Log.v("log", "Writing text message data");
             } catch (IOException e) {
-                Log.v("storage", "Error writing text data in file: " + e.toString());
+                Log.v("log", "Error writing text data in file: " + e.toString());
             }
+        } else {
+            Log.v("log", "El archivo CSV no está listo");
         }
 
+    }
+
+    public void writeAudioData(String data) {
+        Log.v("audio", "Método log de Audio. Se guarda junto con los mensajes de texto.");
+        boolean fileReady = GetCsvTextReady();
+        if (fileReady) {
+            try {
+                //LAB - Append data to file > append = true
+                fileWriter  = new FileWriter(textFile, true);
+                bfWriter = new BufferedWriter(fileWriter);
+                bfWriter.write(data);
+                bfWriter.close();
+                Log.v("audio", "Writing text message data");
+            } catch (IOException e) {
+                Log.v("audio", "Error writing AUDIO data in file: " + e.toString());
+            }
+        } else {
+            Log.v("audio", "El archivo CSV no está listo. Creando archivo log de texto para el audio.");
+        }
     }
 
 

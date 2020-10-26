@@ -38,19 +38,19 @@ public class NeurobehaviourListenerTest {
     @Test
     public void writingMsg() {
         //Testing writingMsg calling
-        listener.writingMsg("exampleUUID", "Text", "AlterUser", applicationContext);
+        listener.writingMsg("exampleUUID", applicationContext);
     }
 
     @Test
     public void inboxMsg() {
         //Testing inboxMsg calling
-        listener.inboxMsg("messageUUID", "Image", "AlterUserName", "face.jpg");
+        //listener.inboxMsg("messageUUID", applicationContext);
     }
 
     @Test
     public void sendingMsg() {
         //Testing sendingMsg calling
-        listener.sendingMsg("messageUUID", "Audio", "AlterUserName", "hello.wav");
+        //listener.sendingMsg("messageUUID", "Audio", "AlterUserName", "hello.wav");
     }
 
     @Test

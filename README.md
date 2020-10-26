@@ -8,7 +8,7 @@
 <ul>
     <li>Interface to communicate with Neurobehavioral classifier module</li>
     <li>Metrics of accelerometer sensor for each event in chat activity</li>
-    <li>Sentiment analysis of each image sent through Helios chat</li>
+    <li>Sentiment analysis of each image sent or received through Helios chat</li>
 	<li>Sentiment analysis of Helios chat texts</li>
 	<li>Storage system for metrics of the module</li>
 </ul>
@@ -52,12 +52,12 @@
 <p>We will use the same calling for all type of message (text / audio / image)</p>
 
 <ul>
-    <li>User starts to write a message -> calling to <b>writingMsg</b> function</li>
-	<li>User sends the written message -> <b>sendingMsg</b> function</li>
+	<li>App starts -> <b>startAccel</b> function to start accelerometer measurement</li>
+    <li>App onDestroy method -> <b>stopAccel</b> function</li>
 </ul><ul>
-    <li>User receives a message -> calling to <b>inboxMsg</b> function</li>
-    <li>User starts to read a message -> <b>readingChat</b> function</li>
-	<li>User closes the chat after reading -> <b>chatClosed</b> function</li>
+    <li>Settings -> Nick name changed -> <b>createCsv</b> method to create files for analysis results</li>
+</ul><ul>
+	<li>User sends a message -> <b>sendingMsg</b> function to start sentimental analysis of message</li>
 </ul><ul>
     <li>Updating Ego - Alter Trust value -> calling to <b>egoAlterTrust</b> function</li>
 </ul>
@@ -163,6 +163,7 @@
 	<li>v/thread > acceleration measurement values (real time linear acceleration and average)</li>
     <li>v/cv > functions for Computer Vision and results of image sentimental analysis</li>
 	<li>v/text > results of text sentimental analysis</li>
+	<li>v/audio > logs of sentimental analysis of audio files</li>
     <li>v/storage > it shows info about module storage system operations</li>
     <li>v/lab > functions for sessions of Neurobehavioural module validation</li>
 </ul>

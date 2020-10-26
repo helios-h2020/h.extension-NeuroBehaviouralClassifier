@@ -33,6 +33,8 @@ public class SentimentalAnalysis extends AppCompatActivity {
    public String getDate(long time)
    private void saveImageData (Context context, int numFaces, String emotionsData, String scoreData)
    private void saveTextData (Context context, PyObject origText, PyObject engText, PyObject tags, PyObject emotions) 
+   private String extractList(List<PyObject> list)
+   private void saveAudioData (Context context, String audioData)
 }
 ```
 

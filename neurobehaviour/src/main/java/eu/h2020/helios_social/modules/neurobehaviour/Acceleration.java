@@ -68,6 +68,7 @@ public class Acceleration implements SensorEventListener {
     //LAB - Time variables
     private long sensorTimeMillis = 0;
     private String time = "";
+    private long timestamp = 0;
 
     public void accelerationInit(Context activityContext){
 
@@ -160,6 +161,7 @@ public class Acceleration implements SensorEventListener {
 
                 // Current time in Milliseconds
                 long actualTimeMillis = System.currentTimeMillis();
+                timestamp = actualTimeMillis / 1000;
 
                 // Time with format hh:mm:ss:mmm
                 time = getDate(actualTimeMillis);
@@ -172,7 +174,7 @@ public class Acceleration implements SensorEventListener {
                     lastUpdate = sensorTimeMillis;
 
                     //write a row in file with this time values
-                    writingValues(sensorTimeMillis, time, acceleration);
+                    writingValues(sensorTimeMillis, timestamp, time, acceleration);
                 }
 
             }
@@ -180,7 +182,7 @@ public class Acceleration implements SensorEventListener {
 
     }
 
-    private void writingValues(final long st, final String t , final float a) {
+    private void writingValues(final long st, final long ts, final String t , final float a) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -196,7 +198,7 @@ public class Acceleration implements SensorEventListener {
                 //LAB - Save data to file if CSV file is ready
                 if (listen.GetCsvReady()) {
                     rows = rows + 1;
-                    csvRows = csvRows + st + ";" + t + ";" + Float.toString(a) + ";" + average + separator;
+                    csvRows = csvRows + st + ";" + ts + ";" + t + ";" + Float.toString(a) + ";" + average + separator;
                     //we save csv rows to file each 100 rows
                     if (rows >= 100) {
                         Log.v("accel", "Rows counter OK. writeData calling...");

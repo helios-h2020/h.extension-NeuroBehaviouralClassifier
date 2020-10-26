@@ -20,14 +20,19 @@ import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
 import eu.h2020.helios_social.core.messaging.HeliosMessage;
 import eu.h2020.helios_social.core.messaging.HeliosMessageListener;
 import eu.h2020.helios_social.core.messaging.HeliosTopic;
+
+//LAB - Listener to send data to Neurobehaviour module
+import eu.h2020.helios_social.modules.neurobehaviour.NeurobehaviourListener;
 
 public class SentimentalAnalysis extends AppCompatActivity {
 
@@ -38,6 +43,8 @@ public class SentimentalAnalysis extends AppCompatActivity {
 
     //File with picture to analyze
     String picture;
+    //File with audio to analyze
+    String audioFile;
 
     //real image width
     private Integer imgWidth = 0;
@@ -50,17 +57,19 @@ public class SentimentalAnalysis extends AppCompatActivity {
     private String newFileName;
 
     private String time;
+    private long timestamp;
 
     //LAB - Neurobehaviour listener
     private NeurobehaviourListener neuroListener = new NeurobehaviourListener();
 
-    public void runThread(final Context context, final String fileName, final HeliosMessageListener messageListener, final HeliosTopic topic, final HeliosMessage message) {
+    public void runThread(final Context context, final String fileName, final HeliosMessageListener messageListener, final HeliosTopic topic, final HeliosMessage message, final String senderName) {
 
         new Thread() {
             public void run() {
                     try {
                         // Current time in Milliseconds
                         long actualTimeMillis = System.currentTimeMillis();
+                        timestamp = actualTimeMillis / 1000;
 
                         // Time with format hh:mm:ss:mmm
                         time = getDate(actualTimeMillis);
@@ -103,9 +112,24 @@ public class SentimentalAnalysis extends AppCompatActivity {
 
                                     scale = 1f;
 
-                                    Log.v("cv", "Python analysis calling - Scale: " + scale);
+                                    pythonAnalysis(context, script, picture, scale, imageView, messageListener, topic, senderName);
+                                    break;
 
-                                    pythonAnalysis(context, script, picture, scale, imageView, messageListener, topic);
+                                case "m4a":
+                                    //Message is an Audio
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(context, "Analizando el mensaje de voz", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                                    //UPV - Audio sentimental analysis
+                                    audioFile = context.getExternalFilesDir(null) + "/HELIOS/" + fileName;
+                                    Log.v("audio", "AUDIO SENTIMENTAL ANALYSIS · Path: " + audioFile);
+
+                                    //Calling method to analyze audio
+
                                     break;
                             }
 
@@ -124,7 +148,7 @@ public class SentimentalAnalysis extends AppCompatActivity {
                             String msgText = msgArray[3];
                             Log.v("text", "Message text: " + msgText);
 
-                            textAnalysis(context, msgText, messageListener, topic);
+                            textAnalysis(context, msgText, messageListener, topic, senderName);
                         }
 
                     } catch (InterruptedException e) {
@@ -156,7 +180,7 @@ public class SentimentalAnalysis extends AppCompatActivity {
     }
 
     //Text sentimental analysis
-    private void textAnalysis (Context context, String message, HeliosMessageListener messageListener, HeliosTopic topic) {
+    private void textAnalysis (Context context, String message, HeliosMessageListener messageListener, HeliosTopic topic, String senderName) {
 
         Log.v("text", "Calling to Python script - Text analysis");
 
@@ -199,8 +223,43 @@ public class SentimentalAnalysis extends AppCompatActivity {
             Log.v("text", "Emotions and score: " + emotions.toString());
 
             //LAB - Saving image analysis data to file
-            saveTextData(context, originalText, textInEnglish, tags, emotions);
+            saveTextData(context, originalText, textInEnglish, tags, emotions, senderName);
 
+            //LAB - Showing analyzed text in a new activity
+            /*
+            List<PyObject> textList = originalText.asList();
+            List<PyObject> engList = textInEnglish.asList();
+            List<PyObject> tagsList = tags.asList();
+            List<PyObject> emotionsList = emotions.asList();
+
+            String text, engText, tagsText, emotionsText;
+
+            text = "";
+            for (Integer i=0; i < textList.size(); i++) {
+                text += textList.get(i) + " ";
+            }
+            engText = "";
+            for (Integer j=0; j < textList.size(); j++) {
+                engText += engList.get(j) + " ";
+            }
+            tagsText = "";
+            for (Integer k=0; k < textList.size(); k++) {
+                tagsText += tagsList.get(k) + " ";
+            }
+            emotionsText = "";
+            for (Integer l=0; l < textList.size(); l++) {
+                emotionsText += emotionsList.get(l) + " ";
+            }
+
+            Intent intent = new Intent(context, AnalyzedTextActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("text", text);
+            intent.putExtra("engText", engText);
+            intent.putExtra("tags", tagsText);
+            intent.putExtra("emotions", emotionsText);
+            context.startActivity(intent);
+
+             */
 
         } catch (Exception e){
 
@@ -213,8 +272,13 @@ public class SentimentalAnalysis extends AppCompatActivity {
         Log.v("text", "Python object closed");
     }
 
+    //Audio sentimental analysis
+    private void audioAnalysis(Context context, String audioData) {
+        saveAudioData(context, audioData);
+    }
+
     //Image sentimental analysis
-    private void pythonAnalysis (Context context, String script, String picture, Float scale, ImageView imageView, HeliosMessageListener messageListener, HeliosTopic topic) {
+    private void pythonAnalysis (Context context, String script, String picture, Float scale, ImageView imageView, HeliosMessageListener messageListener, HeliosTopic topic, String senderName) {
 
         //Si no se ha iniciado con el proyecto, iniciamos Python
         if (! Python.isStarted()) {
@@ -255,7 +319,7 @@ public class SentimentalAnalysis extends AppCompatActivity {
                 Log.v("cv", "Emotions score: " + score.toString());
 
                 //Paint bounding box in image faces with emotions and score
-                paintingImage(squares, emotions, score, picture, scale, imageView, context, messageListener, topic);
+                paintingImage(squares, emotions, score, picture, scale, imageView, context, messageListener, topic, senderName);
 
             } //end else > list is not empty
 
@@ -271,7 +335,7 @@ public class SentimentalAnalysis extends AppCompatActivity {
 
     }
 
-    private void paintingImage(PyObject squares, PyObject emotions, PyObject scores, String imageResource, Float scale, ImageView imageView, Context context, HeliosMessageListener messageListener, HeliosTopic topic) {
+    private void paintingImage(PyObject squares, PyObject emotions, PyObject scores, String imageResource, Float scale, ImageView imageView, Context context, HeliosMessageListener messageListener, HeliosTopic topic, String senderName) {
 
         Paint currentPaint;
         Paint textPaint;
@@ -331,8 +395,8 @@ public class SentimentalAnalysis extends AppCompatActivity {
             score = listScores.get(i).toString();
 
             //Data to send results to Neurobehaviour module
-            emotionsData += emotion + ";";
-            scoreData += score + ";";
+            emotionsData += emotion + ",";
+            scoreData += score + ",";
 
             //Rect functions > 0,0 in top left corner. left,top > x,y first point. right,bottom > x,y second point.
             //https://stackoverflow.com/questions/46914736/how-canvas-drawrect-draws-a-rectangle/46927389
@@ -417,8 +481,15 @@ public class SentimentalAnalysis extends AppCompatActivity {
         //deleteAndSaveImage(imageResource, newName);
 
         //LAB - Saving image analysis data to file
-        saveImageData(context, numFaces, emotionsData, scoreData);
+        saveImageData(context, numFaces, emotionsData, scoreData, senderName);
 
+        //LAB - Showing analyzed image in a new activity
+        /*
+        Intent intent = new Intent(context, AnalyzedImageActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("imagePath", newName);
+        context.startActivity(intent);
+        */
     }
 
     private void deleteAndSaveImage(String oldImage, String newImage) {
@@ -465,7 +536,7 @@ public class SentimentalAnalysis extends AppCompatActivity {
         return String.format("%d:%02d:%02d:%03d", h,m,s,mil);
     }
 
-    private void saveImageData (Context context, int numFaces, String emotionsData, String scoreData) {
+    private void saveImageData (Context context, int numFaces, String emotionsData, String scoreData, String senderName) {
         //Sending data to Neurobehaviour module
 
                 String userName = neuroListener.getUserName();
@@ -476,14 +547,10 @@ public class SentimentalAnalysis extends AppCompatActivity {
                 }
 
                 String separator = System.getProperty("line.separator");
-                neuroListener.writeImageData(time + ";"+ newFileName + ";" + numFaces + separator);
-                neuroListener.writeImageData(" ; ; ;" + emotionsData + separator);
-                neuroListener.writeImageData(" ; ; ;" + scoreData + separator);
-                neuroListener.writeImageData(" ;" + separator);
-
+                neuroListener.writeImageData(timestamp + ";" + time + ";"+ senderName + ";" + newFileName + ";" + numFaces + ";" + emotionsData + ";" + scoreData + separator);
     }
 
-    private void saveTextData (Context context, PyObject origText, PyObject engText, PyObject tags, PyObject emotions) {
+    private void saveTextData (Context context, PyObject origText, PyObject engText, PyObject tags, PyObject emotions, String senderName) {
         //Sending data to Neurobehaviour module
 
         String userName = neuroListener.getUserName();
@@ -496,19 +563,52 @@ public class SentimentalAnalysis extends AppCompatActivity {
         }
 
         String separator = System.getProperty("line.separator");
-        neuroListener.writeTextData(time + ";"+ origText.toString() + ";" + engText.toString() + separator);
+
+        List<PyObject> textList = origText.asList();
+        String text = extractList(textList);
+
+        List<PyObject> engList = engText.asList();
+        String translatedText = extractList(engList);
+
         List<PyObject> tagsList = tags.asList();
+        String stTags = extractList(tagsList);
+
         List<PyObject> emotionsList = emotions.asList();
+        String stEmotions = extractList(emotionsList);
 
-        for (Integer i=0; i < tagsList.size(); i++) {
-            neuroListener.writeTextData(" ; ; ;" + tagsList.get(i).toString() + separator);
-        }
-        neuroListener.writeTextData(" ;" + separator);
-        for (Integer j=0; j < emotionsList.size(); j++) {
-            neuroListener.writeTextData(" ; ; ;" + emotionsList.get(j).toString() + separator);
-        }
-        neuroListener.writeTextData(" ;" + separator);
+        //Parse emotions list to extract Classfication and Score
+        String classification = stEmotions.substring((stEmotions.indexOf("cation")+8), stEmotions.indexOf("p_pos")-3);
+        String positiveScore = stEmotions.substring((stEmotions.indexOf("p_pos=")+6), stEmotions.indexOf("p_neg")-2);
+        String negativeScore = stEmotions.substring((stEmotions.indexOf("p_neg=")+6), stEmotions.length()-2);
 
+        neuroListener.writeTextData(timestamp + ";" + time + ";" + senderName + ";" + text + ";" + translatedText + ";" + stTags + ";" + classification +  ";" + positiveScore + ";" + negativeScore +  ";" + separator);
+
+    }
+
+    private String extractList(List<PyObject> list) {
+        String text = "";
+        for (Integer i=0; i < list.size(); i++) {
+            text += " " + list.get(i);
+        }
+        return text;
+    }
+
+    private void saveAudioData (Context context, String audioData) {
+
+        //Sending AUDIO data to Neurobehaviour module
+
+        String userName = neuroListener.getUserName();
+        //Writing audio info in Text log file:
+        Boolean createdFile = neuroListener.GetCsvTextReady();
+        if (!createdFile) {
+            neuroListener.createCsv("Text", context, userName);
+            Log.v("text", "Creating CSV Text File");
+        } else {
+            Log.v("text", "CsvTextReady = true");
+        }
+
+        String separator = System.getProperty("line.separator");
+        neuroListener.writeTextData( separator + timestamp + ";" + time + ";"+ "Sending AUDIO message" + ";" + audioData + separator + separator);
     }
 
 }

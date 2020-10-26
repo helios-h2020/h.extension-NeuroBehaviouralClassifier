@@ -6,39 +6,74 @@
 
 <h3>Calling from TestClient MainActivity class</h3>
 
-> //Using Neurobehaviour module listener class to send info about chat communications
-> import eu.h2020.helios_social.modules.neurobehaviour.NeurobehaviourListener;
-> //Listener init
-> private NeurobehaviourListener neuroListener;
+```java
+//Using Neurobehaviour module listener class to send info about chat communications
+import eu.h2020.helios_social.modules.neurobehaviour.NeurobehaviourListener;
+//Using SentimentalAnalysis Class
+import eu.h2020.helios_social.modules.neurobehaviour.SentimentalAnalysis;
+
+//Listener init
+private NeurobehaviourListener neuroListener;
+//Sentimental analysis instance
+private SentimentalAnalysis sentimentalAnalysis;
+```
 
 <p> <br><b>onCreate method</b></p>
 
-> neuroListener = new NeurobehaviourListener();
+```java
+neuroListener = new NeurobehaviourListener();
+sentimentalAnalysis = new SentimentalAnalysis();
+context = getApplicationContext();
 
+//start acceleration measurement
+neuroListener.startAccel("start_session", context);
+
+//Setting storage vars
+neuroListener.SetCsvReady(false);
+neuroListener.SetCsvImageReady(false);
+```
 
 <h3>Start sentimental analysis</h3>
 
 <p> <br><b>From ShowMessage function in MainActivity class:</b></p>
 
-> //Sending message to Neurobehaviour module to analyze
-> neuroListener.sendingMsg(message, this.getApplicationContext());
-
-<h3>Start sensors measurement</h3>
-
-<p> <br><b>User starts to read a message</b></p>
-
-> neuroListener.readingChat (String alterUser, Context context);
-
-<p><b>User starts to write a message</b></p>
-
-> neuroListener.writingMsg(String alterUser, Context context);
+```java
+//Sending message to SentimentalAnalysis class to analize
+sentimentalAnalysis.runThread(this.getApplicationContext(), message.getMediaFileName(), listener, topic, message, senderName);
+//Sending message to Neurobehaviour module
+neuroListener.sendingMsg(message, this.getApplicationContext());
+```
 
 <h3>Stop accelerometer measurement</h3>
 
-<p><b>User sends the message</b></p>
+<p><b>onDestroy method</b></p>
 
-> neuroListener.sendingMsg((message, this.getApplicationContext());
+```java
+//Stop accelerometer
+neuroListener.stopAccel();
+```
 
-<p> <br><b>User closes the chat</b></p>
+<h3>Calling from MySettingsFragment class</h3>
 
-> neuroListener.chatClosed(String alterUser);
+If user's name is changed, files for analysis results are created and we start to write metrics:
+
+```java
+    private void changeTextPreference(String key, String value) {
+        EditTextPreference pref = (EditTextPreference) findPreference(key);
+        pref.setSummary(value);
+        HeliosUserData.getInstance().setValue(key, value);
+
+        //LAB - When user name is changed, we start to write metrics
+        if (pref.getKey().equals("username")) {
+            //LAB - User name changed - new session
+            Context context = this.getContext();
+            //LAB - Start to write metrics - new file
+            //Sending new user name to Neurobehaviour listener
+            listener.createCsv("Acceleration", context, value);
+            listener.createCsv("Image", context, value);
+            listener.createCsv("Text", context, value);
+            listener.createCsv("Audio", context, value);
+            Log.v("lab", "Start to write metrics for " + value + " user");
+        }
+    }
+```
