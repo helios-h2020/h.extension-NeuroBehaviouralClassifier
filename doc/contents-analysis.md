@@ -38,10 +38,21 @@ neuroListener.SetCsvImageReady(false);
 <p> <br><b>From ShowMessage function in MainActivity class:</b></p>
 
 ```java
+//Extracting user name from message
+        String senderName = "";
+        try {
+            JSONObject json = new JSONObject(message.getMessage());
+            senderName = json.getString("senderName");
+            Log.v("cv", "Sender name: " + senderName);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 //Sending message to SentimentalAnalysis class to analize
-sentimentalAnalysis.runThread(this.getApplicationContext(), message.getMediaFileName(), listener, topic, message, senderName);
+    sentimentalAnalysis.runThread(this.getApplicationContext(), message.getMediaFileName(), listener, topic, message, senderName);
 //Sending message to Neurobehaviour module
-neuroListener.sendingMsg(message, this.getApplicationContext());
+    neuroListener.sendingMsg(message, this.getApplicationContext());
 ```
 
 <h3>Stop accelerometer measurement</h3>
@@ -58,6 +69,9 @@ neuroListener.stopAccel();
 If user's name is changed, files for analysis results are created and we start to write metrics:
 
 ```java
+    //Neurobehaviour listener instance
+    private NeurobehaviourListener listener = new NeurobehaviourListener();
+
     private void changeTextPreference(String key, String value) {
         EditTextPreference pref = (EditTextPreference) findPreference(key);
         pref.setSummary(value);
@@ -68,12 +82,11 @@ If user's name is changed, files for analysis results are created and we start t
             //LAB - User name changed - new session
             Context context = this.getContext();
             //LAB - Start to write metrics - new file
-            //Sending new user name to Neurobehaviour listener
+            //Sending new user name to Neurobehaviour listener to start writing results
             listener.createCsv("Acceleration", context, value);
             listener.createCsv("Image", context, value);
             listener.createCsv("Text", context, value);
             listener.createCsv("Audio", context, value);
-            Log.v("lab", "Start to write metrics for " + value + " user");
         }
     }
 ```
