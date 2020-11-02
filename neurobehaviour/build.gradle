@@ -1,32 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.chaquo.python'
 
-//Adding changes to compile as AAR library
-buildscript {
-    repositories {
-        google()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.3'
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
-        maven {
-            url "https://builder.helios-social.eu/repository/helios-repository/"
-            credentials {
-                username = heliosUser
-                password = heliosPassword
-            }
-        }
-    }
-}
-
-
 android {
     compileSdkVersion 28
 
@@ -93,11 +67,14 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
     //Using Context module in DataHandler class
-    //implementation project(":context")
-    //implementation project(":messaging")
-	implementation "eu.h2020.helios_social.core.context:context:1.0.0"
-    implementation "eu.h2020.helios_social.core.messaging:messaging:1.1.6"
+    implementation project(":context")
+    implementation project(":messaging")
+
+    //Version for Nexus repository
+    //implementation 'eu.h2020.helios_social.core.messaging:messaging:1.1.6'
+    //implementation 'eu.h2020.helios_social.core.context:context:1.0.0'
 
     def activity_version = "1.1.0"
     implementation "androidx.activity:activity:$activity_version"
