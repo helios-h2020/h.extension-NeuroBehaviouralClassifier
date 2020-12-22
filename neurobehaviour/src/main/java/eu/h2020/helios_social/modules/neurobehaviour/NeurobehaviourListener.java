@@ -1,11 +1,15 @@
 package eu.h2020.helios_social.modules.neurobehaviour;
 
+import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.core.content.res.TypedArrayUtils;
+import androidx.room.Room;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,12 +20,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 //Message module format
 import eu.h2020.helios_social.core.messaging.HeliosMessage;
-
-//Acceleration Class
 
 
 public class NeurobehaviourListener implements NeurobehaviourInterface {
@@ -44,6 +48,9 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
 
     //LAB - User name
     private static String appUserName = "";
+
+    //Instance to get the current Helios context
+    private eu.h2020.helios_social.core.context.Context heliosContext = new eu.h2020.helios_social.core.context.Context(1, "atWork", true);
 
     @Override
     public void writingMsg(String alterUser, Context context) {
@@ -162,19 +169,243 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
         Log.v("cv", "File: " + message.getMediaFileName());
     }
 
+    //Calculating the Ego - Alter sentimental result for egoAlterTrust method
+    //Arousal
+    //Valence
+    //Attention
+
+
+    public String getArousal (String alterUser) {
+
+        RepositoryConversation repositoryConversation = new RepositoryConversation(app);
+        List<ModelConversation> conversationList = repositoryConversation.getAllConversationsWithUser(alterUser);
+
+        RepositoryMessage repositoryMessage = new RepositoryMessage(app);
+
+        int totalConversations = 0;
+        int highArousalConversations = 0;
+        int imageInConversations = 0;
+        int facesInImages = 0;
+        int happyFaces = 0;
+
+        for (int i=0; i < conversationList.size(); i++) {
+            ModelConversation conversation = conversationList.get(i);
+            double startTime = conversation.getStartTime();
+            Log.v("db", "Conversation for Arousal: " + startTime);
+
+            List<ModelMessage> list = repositoryMessage.getMessagesOfConversation(startTime);
+
+            int totalMessages = list.size();
+
+            //Conversations with more than 2.5 messages per minute
+            double timeFirstMessage = repositoryMessage.getTimeOfFirstMessage(startTime);
+            double timeLastMessage = repositoryMessage.getTimeOfLastMessage(startTime);
+
+            float minutes = (float)(timeLastMessage - timeFirstMessage) / 60;
+            Log.v("db", "Minutes of conversation: " + minutes);
+
+            float messagesPerMinute = totalMessages / minutes;
+            if (messagesPerMinute > 2.5f) highArousalConversations++;
+
+            boolean image = false;
+            boolean face = false;
+            boolean happy = false;
+
+            for (int j=0; j < list.size(); j++) {
+                ModelMessage message = list.get(j);
+                if (message.getType().equals("image")) {
+                    image = true;
+                    if (message.getNumOfFaces() > 0) {
+                        face = true;
+                        if (message.getHappyFaces() > 0) happy = true;
+                    }
+                }
+            }
+            totalConversations++;
+            if (image) imageInConversations++;
+            if (face) facesInImages++;
+            if (happy) happyFaces++;
+        }
+
+        float a = 0.6f;
+        float b = 0.075f;
+        float c = 0.125f;
+        float d = 0.2f;
+
+        float percentageHighArousalConversations = highArousalConversations / totalConversations;
+        float percentageImageInConversations = imageInConversations / totalConversations;
+        float percentageFacesInImages = facesInImages / totalConversations;
+        float percentageWithHappyFaces = happyFaces / totalConversations;
+
+        float arousal = (a*percentageHighArousalConversations) + (b*percentageImageInConversations) + (c*percentageFacesInImages) + (d*percentageWithHappyFaces);
+
+        if (arousal >= 0.5f) {
+            return "high";
+        } else {
+            return "low";
+        }
+    }
+
+
+
+    public String getValence ( String alterUser ) {
+
+        RepositoryConversation repositoryConversation = new RepositoryConversation(app);
+        List<ModelConversation> conversationList = repositoryConversation.getAllConversationsWithUser(alterUser);
+
+        RepositoryMessage repositoryMessage = new RepositoryMessage(app);
+
+        int totalConversations = 0;
+        int longMessageConversations = 0;
+        int highValenceConversations = 0;
+
+        for (int i=0; i < conversationList.size(); i++) {
+            ModelConversation conversation = conversationList.get(i);
+            double startTime = conversation.getStartTime();
+            Log.v("db", "Conversation for Valence: " + startTime);
+
+            List<ModelMessage> list = repositoryMessage.getMessagesOfConversation(startTime);
+
+            int totalWordsOfConversation = 0;
+            float messagesValence = 0;
+            int totalMessages = 0;
+            float valenceAverage = 0;
+
+            for (int j=0; j < list.size(); j++) {
+                ModelMessage message = list.get(j);
+                if (message.getType().equals("text")) {
+                    totalWordsOfConversation += list.get(j).getTotalWords();
+                    messagesValence += list.get(j).getTextArousal();
+                    totalMessages++;
+                }
+            }
+            totalConversations++;
+            if (totalWordsOfConversation > 27) longMessageConversations++;
+            valenceAverage = messagesValence / totalMessages;
+            if (valenceAverage > 0.5f) highValenceConversations++;
+        }
+
+        Log.v("db", "Valence - Long conversations higher than 27 words: " + longMessageConversations + " over " + totalConversations + " conversations.");
+        Log.v("db", "Valence - Conversations with high valence: " + highValenceConversations + " over " + totalConversations + " conversations.");
+
+        float a = 0.3f;
+        float b = 0.7f;
+
+        float percentageLongConversations = longMessageConversations / totalConversations;
+        float percentageHighValenceConversations = highValenceConversations / totalConversations;
+
+        float valence = (a*percentageLongConversations) + (b*percentageHighValenceConversations);
+
+        if (valence >= 0.5f) {
+            return "high";
+        } else {
+            return "low";
+        }
+    }
+
+
+
+    public String getAttention (String alterUser, String context) {
+
+        RepositoryConversation repositoryConversation = new RepositoryConversation(app);
+        List<ModelConversation> conversationList = repositoryConversation.getAllConversationsWithUser(alterUser);
+
+        double firstTime = repositoryConversation.getFirstConversation(alterUser);
+        double lastTime = repositoryConversation.getLastConversation(alterUser);
+
+        //timestamp is defined in seconds
+        float days = (float)(lastTime - firstTime)/(60*60*24);
+        int totalDays = (int)days + 1;
+        Log.v("db", "Total days: " + totalDays);
+
+        int lastDay = 0;
+        int currentDay = 0;
+        int daysWithConversation = 0;
+        Log.v("db", "Conversation list size: " + conversationList.size());
+        for (int i=0; i<conversationList.size(); i++) {
+            ModelConversation conversation =  conversationList.get(i);
+            currentDay = getDay(conversation.getStartTime());
+            Log.v("db", "Current day: " + currentDay);
+            if (currentDay != lastDay) daysWithConversation++;
+            lastDay = currentDay;
+        }
+
+        Log.v("db", "Days with conversation: " + daysWithConversation);
+
+        float percentageOfDays = daysWithConversation / totalDays;
+
+        if (percentageOfDays < 0.3333f) {
+            return "low";
+        } else if (percentageOfDays < 0.6666) {
+            return "medium";
+        } else return "high";
+
+    }
+
+    private int getDay (double time) {
+        Date date = new Date((long)time);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        return day;
+    }
+
+    private String[] getContexts(String alterUser) {
+        String[] contexts = new String[] {"atWork"};
+
+        return contexts;
+    }
+
+    private String[][] insertRow(String[][] m, int r, String[] data) {
+        String[][] out = new String[m.length + 1][];
+        for (int i = 0; i < r; i++) {
+            out[i] = m[i];
+        }
+        out[r] = data;
+        for (int i = r + 1; i < out.length; i++) {
+            out[i] = m[i - 1];
+        }
+        return out;
+    }
+
     @Override
     public String[][] egoAlterTrust(String alterUser) {
 
-        Log.v("listen", "EGO-ALTER TRUST - Alter: " + alterUser);
-        //Consulte last stored values in module
-        //Consulte current Context > Context module
-        //Calculate new values
-        String[][] dummyMatrix = {
+        Log.v("db", "EGO-ALTER TRUST - Alter: " + alterUser);
+
+        String[][] sentimentalAnalysisMatrix = {
                 {"Context", "Valence", "Arousal", "Attention"},
-                {"Home", "Positive", "Positive", "Medium"},
-                {"Work", "Positive", "Negative", "High"}
                             };
-        return dummyMatrix;
+
+        String[] contexts = getContexts(alterUser);
+
+        for (int i=0; i<contexts.length; i++) {
+
+            Log.v("db", "Context: " + contexts[i]);
+
+            String valence = getValence(alterUser);
+            Log.v("db", "Valence: " + valence);
+
+            String arousal = getArousal(alterUser);
+            Log.v("db", "Arousal: " + arousal);
+
+            String attention = getAttention(alterUser, contexts[i]);
+            Log.v("db", "Attention: " + attention);
+
+            sentimentalAnalysisMatrix = insertRow(sentimentalAnalysisMatrix, 1, new String[]{ contexts[i], valence, arousal, attention });
+            Log.v("db", "Matrix row: " + contexts[i] + " - " + valence + " - " + arousal + " - " + attention);
+
+        }
+
+        //Delete messages and conversations data from tables after sending results
+        RepositoryConversation repositoryConversation = new RepositoryConversation(app);
+        RepositoryMessage repositoryMessage = new RepositoryMessage(app);
+        //repositoryConversation.deleteAll();
+        //repositoryMessage.deleteAll();
+
+        return sentimentalAnalysisMatrix;
     }
 
     @Override
@@ -233,9 +464,9 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
                     try {
                         imageFile.createNewFile();
                     } catch (IOException e) {
-                        Log.v("storage", "Error creating csv file for Image Analysis: " + e.toString());
+                        Log.v("log", "Error creating csv file for Image Analysis: " + e.toString());
                     }
-                    Log.v("Storage", "Creating ImageAnalysis.csv file in " + imagePath);
+                    Log.v("log", "Creating ImageAnalysis.csv file in " + imagePath);
 
                     String imageHeader = "Sending images start: ;" + time + separator;
                     imageHeader += "User: ;" + userName + separator;
@@ -412,6 +643,86 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
 
     public void SetCsvTextReady(Boolean value) {
         csvTextReady = value;
+    }
+
+
+    //Data manager for database with results
+    NeurobehaviourDatabase db;
+    RepositoryMessage messageRepository;
+    Application app = new Application();
+
+    //Timestamp to store start conversation time and the time of the last message
+    private static double startConversationTime = 0;
+
+    public void DatabaseInstance(Context context, Application application) {
+        app = application;
+        db = NeurobehaviourDatabase.getDatabase(context);
+        Log.v("db", "Database instance");
+    }
+
+    public void InsertMessage(double time, boolean sent, String type, String msgContent, int totalWords, float textArousal, int faces, int happyFaces, String alterUser) {
+
+        Log.v("db", "InsertMessage listener method");
+        ModelMessage message = new ModelMessage(time, sent, type, msgContent);
+
+        switch (type) {
+            case "text":
+                message.setTotalWords(totalWords);
+                message.setTextArousal(textArousal);
+                break;
+            case "image":
+                message.setNumOfFaces(faces);
+                message.setHappyFaces(happyFaces);
+        }
+
+        //Insert in DB
+        messageRepository = new RepositoryMessage(app);
+        Log.v("db", "Creating repository...");
+
+        messageRepository.insert(message);
+        Log.v("db", "Database insertion OK!");
+
+        //Is this message contained in current conversation?
+        RepositoryConversation repositoryConversation = new RepositoryConversation(app);
+        double conversationTime = repositoryConversation.getAlterUserConversation(alterUser);
+        Log.v("db", "Conversation time: " + conversationTime);
+        double lastMessage;
+        if (conversationTime != 0) {
+            //Get timestamp of last message of conversation
+            lastMessage = messageRepository.getTimeOfLastMessage(conversationTime);
+            Log.v("db", "Last message time: " + lastMessage);
+        } else {
+            lastMessage = 0;
+        }
+
+        if ((lastMessage == 0) || ((time - lastMessage) > 300)) {
+            //More than 5 min. between messages > New conversation
+            Log.v("db", "Creating new conversation");
+            //This is the first message of the conversation
+            //Create a new conversation and add message
+            startConversationTime = time;
+            ModelConversation conversation = new ModelConversation(startConversationTime, alterUser, getCurrentContext());
+
+            //Insert new conversation in DB
+            repositoryConversation.insert(conversation);
+            Log.v("db", "New conversation. Start time: " + time);
+            Log.v("db", "Helios Context: " + getCurrentContext());
+
+            //set conversation of message
+            message.setConversationTime(time);
+            //update message in database
+            messageRepository.insert(message);
+
+        } else {
+            //Insert message in current conversation
+            message.setConversationTime(conversationTime);
+            messageRepository.insert(message);
+            Log.v("db", "Message inserted in current conversation!");
+        }
+    }
+
+    private String getCurrentContext() {
+        return heliosContext.getName();
     }
 
 }
