@@ -10,7 +10,8 @@
     <li>Metrics of accelerometer sensor for each event in chat activity</li>
     <li>Sentiment analysis of each image sent or received through Helios chat</li>
 	<li>Sentiment analysis of Helios chat texts</li>
-	<li>Storage system for metrics of the module</li>
+	<li>SQLite database to store on the device results of sentiment analysis</li>
+    <li>egoAlterTrust method to get results of sentiment analysis of an Ego - Alter relationship through NeurobehaviourListener</li>
 </ul>
 <p><b>HELIOS Neuro-behavioral classifier module</b> is one of the HELIOS Module APIs as highlighted in the picture below:</p>
 <img src="./doc/Esquema-Neurobehavioural.png" alt="HELIOS Neuro-behavioral classifier module" />
@@ -43,6 +44,36 @@
 </p>
 
 <p>In order to test all features of Neurobehavioral module, you will need to modify some files in TestClient app folder. Please follow <a href="doc/testclient-files.md" title="testclient app files">these steps</a>.</p>
+
+<h2> </h2>
+<h2>Integration of the module using Nexus Helios repository</h2>
+
+<p>Add the repository in build.gradle file of project:</p>
+
+```java
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven {
+            url "https://builder.helios-social.eu/repository/helios-repository/"
+            credentials {
+                username = heliosUser
+                password = heliosPassword
+            }
+        }
+
+    }
+}
+```
+
+<p>Add dependency to the build.gradle file of the app:</p>
+
+```java
+dependencies {
+	implementation 'eu.h2020.helios_social.modules.neurobehaviour:neurobehaviour:1.0.22'
+}
+```
 
 <h2> </h2>
 <h1>Neurobehaviour module inputs</h1>
@@ -106,6 +137,15 @@
 </ul>
 
 
+<h2> </h2>
+<h1>TestClient User Interface</h1>
+
+<p>Neurobehaviour module uses a version of TestClient app to implement some features like Helios chat. This allows to stablish a format for text messages. These messages are sent to Neurobehaviour module to perform the sentiment analysis.</p>
+
+<p>In order to perform this sentiment analysis, we have developed a set of <b>AI algorithms using Python</b>. This version of TestClient app includes a Python wrapper that allows to compile Python scripts on an Android device.</p>
+
+<p>Configuration of this Python plugin is implemented in <b>build.gradle</b> files of the project.</p>
+
 
 <h2> </h2>
 <h1>Module structure - Java classes</h1>
@@ -116,7 +156,7 @@
 	<img src="./doc/module01.png" alt="HELIOS Neuro-behavioral classifier module" style="margin-left: 20px" />
 </p>
 <p style="margin: 20px; margin-left: 140px; margin-bottom: 40px; valingn: top">
-	<img src="./doc/module03.png" alt="HELIOS Neuro-behavioral classifier module" style="margin-left: 20px" />
+	<img src="./doc/Neurobehaviour-Classes02.png" alt="HELIOS Neuro-behavioral classifier module" style="margin-left: 20px" />
 </p>
 
 <ul>
@@ -128,6 +168,19 @@
     <li><a href="doc/classes-imageanalysis.md" title="Image analysis class">Sentiment analysis Class</a></li>
 </ul>
 
+
+<h2> </h2>
+<h2>Neurobehaviour module storage</h2>
+
+<p>The module implements a local storage system to save the sentiment analysis of each message sent or received through Helios chat. This storage system is implemented using a <b>SQLite database</b> and <b>Room</b> like a data object interface.</p>
+
+<p>Design of Neurobehavioral module database:</p>
+
+<img src="doc/NeurbDatabase.png" alt="Android SQLite database">
+
+<p>SQLite + Room database implementation</p>
+
+<img src="doc/RoomDatabase.PNG" alt="Room database implementation">
 
     
 <h2> </h2>
