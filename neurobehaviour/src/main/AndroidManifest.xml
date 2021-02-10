@@ -5,7 +5,14 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"></uses-permission>
 
     <application>
-        android:name="com.chaquo.python.android.PyApplication"
+        <!-- Set a name for your database -->
+        <meta-data android:name="AA_DB_NAME" android:value="neurobehaviour_database.db" />
+        <meta-data android:name="AA_DB_VERSION" android:value="1" />
+
+        <!-- All of your models (tables) go here, separated by coma -->
+        <meta-data
+            android:name="AA_MODELS"
+            android:value="eu.h2020.helios_social.modules.neurobehaviour.ModelMessage, eu.h2020.helios_social.modules.neurobehaviour.ModelConversation" />
     </application>
 
 </manifest>

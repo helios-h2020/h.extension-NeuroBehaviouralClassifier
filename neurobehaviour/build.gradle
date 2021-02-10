@@ -23,10 +23,10 @@ android {
         }
 
         python {
-            //using Python 3.6.8 - portatil
-            //buildPython "C:/Users/Usuario/AppData/Local/Programs/Python/Python36/python.exe"
+            //using Python 3.7.7 - portatil
+            //buildPython "C:/Users/Usuario/AppData/Local/Programs/Python/Python37/python.exe"
             //using Python 3.7.7 - PC i3B
-            buildPython "C:/Users/viibba/AppData/Local/Programs/Python/Python37/python.exe"
+            //buildPython "C:/Users/viibba/AppData/Local/Programs/Python/Python37/python.exe"
             pip {
                 install "numpy"
                 install "scipy"
@@ -46,7 +46,6 @@ android {
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
-
     }
 
     buildTypes {
@@ -56,6 +55,10 @@ android {
         }
         innerTest {
         }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
 
 }
@@ -68,14 +71,20 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    //Using Context module in DataHandler class
-    implementation project(":context")
-    implementation project(":messaging")
+    //Database dependencies
+    def room_version = "2.2.6"
 
-    //Version for Nexus repository
-    //implementation 'eu.h2020.helios_social.core.messaging:messaging:1.1.6'
-    //implementation 'eu.h2020.helios_social.core.context:context:1.0.0'
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
 
-    def activity_version = "1.1.0"
-    implementation "androidx.activity:activity:$activity_version"
+    // optional - RxJava support for Room
+    implementation "androidx.room:room-rxjava2:$room_version"
+    // optional - Guava support for Room, including Optional and ListenableFuture
+    implementation "androidx.room:room-guava:$room_version"
+    // optional - Test helpers
+    testImplementation "androidx.room:room-testing:$room_version"
+
+    //Other modules used by Neurobehaviour
+    implementation 'eu.h2020.helios_social.core.messaging:messaging:1.1.6'
+    implementation 'eu.h2020.helios_social.core.context:context:1.0.10'
 }

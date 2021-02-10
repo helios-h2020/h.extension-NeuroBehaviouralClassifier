@@ -50,7 +50,7 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
     private static String appUserName = "";
 
     //Instance to get the current Helios context
-    private eu.h2020.helios_social.core.context.Context heliosContext = new eu.h2020.helios_social.core.context.Context(1, "atWork", true);
+    private eu.h2020.helios_social.core.context.Context heliosContext = new eu.h2020.helios_social.core.context.Context("1", "atWork", true);
 
     @Override
     public void writingMsg(String alterUser, Context context) {

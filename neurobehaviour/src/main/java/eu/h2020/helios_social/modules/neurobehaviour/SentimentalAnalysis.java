@@ -1,6 +1,7 @@
 package eu.h2020.helios_social.modules.neurobehaviour;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -34,7 +35,7 @@ import eu.h2020.helios_social.core.messaging.HeliosTopic;
 //LAB - Listener to send data to Neurobehaviour module
 import eu.h2020.helios_social.modules.neurobehaviour.NeurobehaviourListener;
 
-public class SentimentalAnalysis extends AppCompatActivity {
+public class SentimentalAnalysis {
 
     String script = "CVscript_All_images";  //main/python/CVscript_All_images.py
     String textScript = "Text_Analysis";  //main/python/Text_Analysis.py
@@ -62,7 +63,7 @@ public class SentimentalAnalysis extends AppCompatActivity {
     //LAB - Neurobehaviour listener
     private NeurobehaviourListener neuroListener = new NeurobehaviourListener();
 
-    public void runThread(final Context context, final String fileName, final HeliosMessageListener messageListener, final HeliosTopic topic, final HeliosMessage message, final String senderName) {
+    public void runThread(Context context, String fileName, HeliosMessageListener messageListener, HeliosTopic topic, HeliosMessage message, String senderName) {
 
         new Thread() {
             public void run() {
@@ -90,12 +91,6 @@ public class SentimentalAnalysis extends AppCompatActivity {
                                 case "jpg":
                                 case "png":
                                     //Message is a picture
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(context, "Analizando la imagen", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
 
                                     //UPV - Image sentimental analysis
                                     picture = context.getExternalFilesDir(null) + "/HELIOS/" + fileName;
@@ -117,12 +112,6 @@ public class SentimentalAnalysis extends AppCompatActivity {
 
                                 case "m4a":
                                     //Message is an Audio
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(context, "Analizando el mensaje de voz", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
 
                                     //UPV - Audio sentimental analysis
                                     audioFile = context.getExternalFilesDir(null) + "/HELIOS/" + fileName;
@@ -136,12 +125,6 @@ public class SentimentalAnalysis extends AppCompatActivity {
                         } else {
                             //Text Message
                             Log.v("text", "File null: TEXT MESSAGE");
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(context, "Analizando el texto", Toast.LENGTH_SHORT).show();
-                                }
-                            });
 
                             String msgFromHeliosMessage = message.getMessage();
                             String[] msgArray = msgFromHeliosMessage.split("\"");
@@ -548,6 +531,40 @@ public class SentimentalAnalysis extends AppCompatActivity {
 
                 String separator = System.getProperty("line.separator");
                 neuroListener.writeImageData(timestamp + ";" + time + ";"+ senderName + ";" + newFileName + ";" + numFaces + ";" + emotionsData + ";" + scoreData + separator);
+
+        //Saving to database
+        boolean sent = senderName.equals(userName);
+        Log.v("db", "User is the sender: " + sent);
+        Log.v("db", "Image score data: " + scoreData);
+        Log.v("db", "Emotions: " + emotionsData);
+        float score = scoreAverage(scoreData);
+        Log.v("db", "Score average: " + score);
+        int happyFaces = numOfHappyFaces(emotionsData);
+        Log.v("db", "Num of happy faces: " + happyFaces);
+        neuroListener.InsertMessage(timestamp, sent, "image", "", 0, score, numFaces, happyFaces, senderName);
+
+    }
+
+    private int numOfHappyFaces(String emotions) {
+        //string to array of words
+        String[] emotionsList = emotions.split(",");
+        int n = 0;
+        for (int i = 0; i < emotionsList.length; i++) {
+            if (emotionsList[i].equals("Happy")) n++;
+        }
+        return n;
+    }
+
+    private float scoreAverage(String score) {
+        String[] scoreList = score.split(",");
+        float totalScore = 0;
+        float numElements = 0;
+        for (int i = 0; i < scoreList.length; i++) {
+            totalScore += Float.parseFloat(scoreList[i]);
+            numElements = i + 1;
+        }
+        float average = totalScore / numElements;
+        return average;
     }
 
     private void saveTextData (Context context, PyObject origText, PyObject engText, PyObject tags, PyObject emotions, String senderName) {
@@ -583,6 +600,11 @@ public class SentimentalAnalysis extends AppCompatActivity {
 
         neuroListener.writeTextData(timestamp + ";" + time + ";" + senderName + ";" + text + ";" + translatedText + ";" + stTags + ";" + classification +  ";" + positiveScore + ";" + negativeScore +  ";" + separator);
 
+        //Saving to database
+        boolean sent = senderName.equals(userName);
+        Log.v("db", "User is the sender: " + sent);
+        float score = Float.parseFloat(positiveScore);
+        neuroListener.InsertMessage(timestamp, sent, "text", text, numOfWords(text), score, 0, 0, senderName);
     }
 
     private String extractList(List<PyObject> list) {
@@ -609,6 +631,18 @@ public class SentimentalAnalysis extends AppCompatActivity {
 
         String separator = System.getProperty("line.separator");
         neuroListener.writeTextData( separator + timestamp + ";" + time + ";"+ "Sending AUDIO message" + ";" + audioData + separator + separator);
+    }
+
+    private int numOfWords(String text) {
+        int count = 0;
+        char ch[] = new char[text.length()];
+        for (int i=0; i<text.length(); i++) {
+            ch[i] = text.charAt(i);
+            if( ((i>0)&&(ch[i]!=' ')&&(ch[i-1]==' ')) || ((ch[0]!=' ')&&(i==0)) )
+                count++;
+        }
+        Log.v("db", "Number of words: " + count);
+        return count;
     }
 
 }

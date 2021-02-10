@@ -1,0 +1,2 @@
+rootProject.name='Helios App'
+include ':app', ':neurobehaviour'

@@ -56,11 +56,8 @@ public class NeurobehaviourListenerTest {
     @Test
     public void egoAlterTrust() {
         //Testing egoAlterTrust calling and result value
-        long lastTime = 158334997;
-        int[] dummyArray = {4, 5, 3, 6};
-        int[] result = listener.egoAlterTrust("AlterUserName", 4f, lastTime);
-        //Function should return an array with 4 integer values: 4,5,3,6
-        Assert.assertArrayEquals(dummyArray, result);
+        String[][] result = listener.egoAlterTrust("AlterUserName");
+        Assert.assertTrue(result.length > 0);
     }
 
     @Test
