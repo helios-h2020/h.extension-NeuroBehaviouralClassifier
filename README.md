@@ -76,6 +76,21 @@ dependencies {
 ```
 
 <h2> </h2>
+<h2>Creation of the AAR library</h2>
+
+<p>It's possible to create an AAR file to use the module like a library for any project.</p>
+
+<p>The <b>build.gradle</b> file of Neurobehaviour module includes a line to set the build configuration:</p>
+
+```java
+abiFilters "armeabi-v7a", "x86"
+```
+
+<p>This setting allows to generate a build for two architectures, PC (Android emulator) and Android mobile.</p>
+
+<p>In order to limit size of AAR file, we can use only <b>"armeabi-v7a"</b> value for a production environment. In other hand, we can use <b>"x86"</b> value to test AAR library with Android Studio emulator.</p>
+
+<h2> </h2>
 <h1>Neurobehaviour module inputs</h1>
 
 <p><b>Helios app should activate Neurobehavioral module with this events and its correspondent calling:</b></p>
@@ -135,16 +150,6 @@ dependencies {
 	<li><a href="doc/contents-analysis.md" title="Contents analysis">Contents analysis: Text, image and speech analysis</a></li>
 	<li><a href="doc/ego-alter-analysis.md" title="Ego - Alter analysis">Ego - Alter analysis</a></li>
 </ul>
-
-
-<h2> </h2>
-<h1>TestClient User Interface</h1>
-
-<p>Neurobehaviour module uses a version of TestClient app to implement some features like Helios chat. This allows to stablish a format for text messages. These messages are sent to Neurobehaviour module to perform the sentiment analysis.</p>
-
-<p>In order to perform this sentiment analysis, we have developed a set of <b>AI algorithms using Python</b>. This version of TestClient app includes a Python wrapper that allows to compile Python scripts on an Android device.</p>
-
-<p>Configuration of this Python plugin is implemented in <b>build.gradle</b> files of the project.</p>
 
 
 <h2> </h2>
