@@ -28,12 +28,13 @@ android {
             //using Python 3.7.7 - PC i3B
             //buildPython "C:/Users/viibba/AppData/Local/Programs/Python/Python37/python.exe"
             pip {
-                install "numpy"
-                install "scipy"
-                install "scikit-learn"
-                install "argparse"
-                install "opencv-python"
-                install "matplotlib"
+                //install "numpy"
+                //install "scipy"
+                //install "scikit-learn"
+                //install "argparse"
+                //install "opencv-python"
+                install "opencv-python-headless"
+                //install "matplotlib"
                 install "keras==2.3.1"
                 install "tensorflow"
                 install "textblob"
@@ -44,7 +45,9 @@ android {
         }
 
         ndk {
-            abiFilters "armeabi-v7a", "x86"
+            //abiFilters "armeabi-v7a", "x86"
+            //abiFilters "x86"
+            abiFilters "armeabi-v7a"
         }
     }
 
