@@ -71,7 +71,7 @@ allprojects {
 
 ```java
 dependencies {
-	implementation 'eu.h2020.helios_social.modules.neurobehaviour:neurobehaviour:1.1.0'
+	implementation 'eu.h2020.helios_social.modules.neurobehaviour:neurobehaviour:1.1.8'
 }
 ```
 
