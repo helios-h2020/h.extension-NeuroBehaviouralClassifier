@@ -411,7 +411,7 @@ public class NeurobehaviourListener implements NeurobehaviourInterface {
     @Override
     public void createCsv(String fileType, Context context, String userName) {
 
-        //LAB - Public user name
+        //UPV - Public user name
         setUserName(userName);
 
         Date date = new Date();

@@ -21,6 +21,9 @@ import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -126,9 +129,19 @@ public class SentimentalAnalysis {
                             //Text Message
                             Log.v("text", "File null: TEXT MESSAGE");
 
-                            String msgFromHeliosMessage = message.getMessage();
-                            String[] msgArray = msgFromHeliosMessage.split("\"");
-                            String msgText = msgArray[3];
+                            //UPV - Old format of Helios message:
+                            //String msgFromHeliosMessage = message.getMessage();
+                            //String[] msgArray = msgFromHeliosMessage.split("\"");
+                            //String msgText = msgArray[3];
+
+                            String msgText = "";
+                            try {
+                                JSONObject json = new JSONObject(message.getMessage());
+                                msgText = json.getString("msg");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
                             Log.v("text", "Message text: " + msgText);
 
                             textAnalysis(context, msgText, messageListener, topic, senderName);

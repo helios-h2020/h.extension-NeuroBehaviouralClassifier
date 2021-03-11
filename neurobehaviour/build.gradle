@@ -27,6 +27,10 @@ android {
             //buildPython "C:/Users/Usuario/AppData/Local/Programs/Python/Python37/python.exe"
             //using Python 3.7.7 - PC i3B
             //buildPython "C:/Users/viibba/AppData/Local/Programs/Python/Python37/python.exe"
+            //Disble compilation of local source code:
+            pyc {
+                src false
+            }
             pip {
                 //install "numpy"
                 //install "scipy"
@@ -45,9 +49,9 @@ android {
         }
 
         ndk {
-            //abiFilters "armeabi-v7a", "x86"
+            abiFilters "arm64-v8a", "x86"
             //abiFilters "x86"
-            abiFilters "armeabi-v7a"
+            //abiFilters "armeabi-v7a"
         }
     }
 
