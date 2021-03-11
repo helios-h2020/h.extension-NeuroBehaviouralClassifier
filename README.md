@@ -71,7 +71,7 @@ allprojects {
 
 ```java
 dependencies {
-	implementation 'eu.h2020.helios_social.modules.neurobehaviour:neurobehaviour:1.1.8'
+	implementation 'eu.h2020.helios_social.modules.neurobehaviour:neurobehaviour:1.1.9'
 }
 ```
 
@@ -83,12 +83,12 @@ dependencies {
 <p>The <b>build.gradle</b> file of Neurobehaviour module includes a line to set the build configuration:</p>
 
 ```java
-abiFilters "armeabi-v7a", "x86"
+abiFilters "arm64-v8a", "x86"
 ```
 
 <p>This setting allows to generate a build for two architectures, PC (Android emulator) and Android mobile.</p>
 
-<p>In order to limit size of AAR file, we can use only <b>"armeabi-v7a"</b> value for a production environment. In other hand, we can use <b>"x86"</b> value to test AAR library with Android Studio emulator.</p>
+<p>In order to limit size of AAR file, we can use only <b>"arm64-v8a"</b> value for a production environment. In other hand, we can use <b>"x86"</b> value to test AAR library with Android Studio emulator.</p>
 
 <h2> </h2>
 <h1>Neurobehaviour module inputs</h1>
@@ -144,7 +144,35 @@ abiFilters "armeabi-v7a", "x86"
 <h2> </h2>
 <h1>Using the module</h1>
 
-<p>How we can call module functions from other modules through methods of the listener:</p>
+<h3>AndroidManifest permissions</h3>
+
+<p>In order to use sensors of Android device, we have to add permissions in <b>AndroidManifest.xml</b> file of the app:</p>
+
+```xml
+    <!-- UPV LAB - Using camera to send photos -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <!-- Only for Google Play: -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
+    <!-- UPV LAB - Using audio recording to send voice messages -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- UPV LAB · Provider to manage files · Used by the camera -->
+    <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="eu.h2020.helios_social.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+    </provider>
+```
+
+<h3>Calls to Neurobehaviour module methods</h3>
+
+<p>How to call module functions from other modules through methods of the listener:</p>
 
 <ul>
 	<li><a href="doc/contents-analysis.md" title="Contents analysis">Contents analysis: Text, image and speech analysis</a></li>

@@ -16,21 +16,28 @@ import eu.h2020.helios_social.modules.neurobehaviour.SentimentalAnalysis;
 private NeurobehaviourListener neuroListener;
 //Sentimental analysis instance
 private SentimentalAnalysis sentimentalAnalysis;
+private android.content.Context context;
 ```
 
 <p> <br><b>onCreate method</b></p>
 
 ```java
-neuroListener = new NeurobehaviourListener();
-sentimentalAnalysis = new SentimentalAnalysis();
-context = getApplicationContext();
+    //UPV - Setup listener for Neurobehaviour module
+    neuroListener = new NeurobehaviourListener();
+    context = getApplicationContext();
 
-//start acceleration measurement
-neuroListener.startAccel("start_session", context);
+    //UPV - Start acceleration measurement
+    neuroListener.startAccel("start_session", context);
 
-//Setting storage vars
-neuroListener.SetCsvReady(false);
-neuroListener.SetCsvImageReady(false);
+    //UPV - Setting storage vars
+    neuroListener.SetCsvReady(false);
+    neuroListener.SetCsvImageReady(false);
+
+    //UPV - Sentimental analysis instance
+    sentimentalAnalysis = new SentimentalAnalysis();
+
+    //UPV - Neurobehaviour database for analysis results
+    neuroListener.DatabaseInstance(context, getApplication());
 ```
 
 <h3>Start sentimental analysis</h3>
@@ -38,21 +45,27 @@ neuroListener.SetCsvImageReady(false);
 <p> <br><b>From ShowMessage function in MainActivity class:</b></p>
 
 ```java
-//Extracting user name from message
+        //UPV - Extracting user name from message
         String senderName = "";
+        String msgType = "";
         try {
             JSONObject json = new JSONObject(message.getMessage());
             senderName = json.getString("senderName");
-            Log.v("cv", "Sender name: " + senderName);
+            msgType = json.getString("messageType");
+            Log.v("text", "Sender name: " + senderName);
+            Log.v("text", "Type of message: " + msgType);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-//Sending message to SentimentalAnalysis class to analize
-    sentimentalAnalysis.runThread(this.getApplicationContext(), message.getMediaFileName(), listener, topic, message, senderName);
-//Sending message to Neurobehaviour module
-    neuroListener.sendingMsg(message, this.getApplicationContext());
+        //UPV - Don't analyze "JOIN" messages
+        if (msgType.equals("MESSAGE")) {
+            //UPV - sending message to SentimentalAnalysis class to analize
+            sentimentalAnalysis.runThread(this.getApplicationContext(), message.getMediaFileName(), listener, topic, message, senderName);
+            //UPV - sending message to Neurobehaviour module
+            neuroListener.sendingMsg(message, this.getApplicationContext());
+        }
 ```
 
 <h3>Stop accelerometer measurement</h3>
