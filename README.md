@@ -14,7 +14,7 @@
     <li>egoAlterTrust method to get results of sentiment analysis of an Ego - Alter relationship through NeurobehaviourListener</li>
 </ul>
 <p><b>HELIOS Neuro-behavioral classifier module</b> is one of the HELIOS Module APIs as highlighted in the picture below:</p>
-<img src="./doc/Esquema-Neurobehavioural.png" alt="HELIOS Neuro-behavioral classifier module" />
+<img src="https://raw.githubusercontent.com/helios-h2020/h.extension-NeuroBehaviouralClassifier/master/doc/Esquema-Neurobehavioural.png" alt="HELIOS Neuro-behavioral classifier module" />
 
 <h2>Cloning repository</h2>
 <p>git clone https://github.com/helios-h2020/h.extension-NeuroBehaviouralClassifier.git </p>
