@@ -24,7 +24,7 @@
 <p>Current version of Neurobehaviour module works with TestClient app (app + modules) with the purpose of integrate callings to Neurobehaviour module when the user interacts with Helios chat.</p>
 
 <p> <br>
-<img src="./doc/module01.png" alt="HELIOS app integration" />
+<img src="https://raw.githubusercontent.com/helios-h2020/h.extension-NeuroBehaviouralClassifier/master/doc/module01.png" alt="HELIOS app integration" />
 </p>
 <br>
 <p>Please follow the next steps to integrate Neurobehaviour module into your app.</p>
