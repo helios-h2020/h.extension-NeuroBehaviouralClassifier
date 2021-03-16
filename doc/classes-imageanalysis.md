@@ -1,4 +1,6 @@
-<h3>Sentiment analysis class</h3>
+<h2>Sentiment analysis class</h2>
+
+<h3>Image analysis</h3>
 
 <p>This class performs a sentimental analysis of each image sent by user using Helios chat. Using deep learning models, this module extracts:</p>
 
@@ -10,7 +12,7 @@
 
 <p>Results are saved in a text file and are drawn over the image:</p>
 
-<p><img src="./image-analysis.jpg" alt="image analysis" /></p>
+<p><img src="https://raw.githubusercontent.com/helios-h2020/h.extension-NeuroBehaviouralClassifier/master/doc/image-analysis.jpg" alt="image analysis" /></p>
 
 <h3>Text analysis</h3>
 
@@ -37,5 +39,6 @@ public class SentimentalAnalysis extends AppCompatActivity {
    private void saveAudioData (Context context, String audioData)
 }
 ```
+
 
 	

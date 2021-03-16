@@ -14,7 +14,7 @@
     <li>egoAlterTrust method to get results of sentiment analysis of an Ego - Alter relationship through NeurobehaviourListener</li>
 </ul>
 <p><b>HELIOS Neuro-behavioral classifier module</b> is one of the HELIOS Module APIs as highlighted in the picture below:</p>
-<img src="./doc/Esquema-Neurobehavioural.png" alt="HELIOS Neuro-behavioral classifier module" />
+<img src="https://raw.githubusercontent.com/helios-h2020/h.extension-NeuroBehaviouralClassifier/master/doc/Esquema-Neurobehavioural.png" alt="HELIOS Neuro-behavioral classifier module" />
 
 <h2>Cloning repository</h2>
 <p>git clone https://github.com/helios-h2020/h.extension-NeuroBehaviouralClassifier.git </p>
@@ -24,7 +24,7 @@
 <p>Current version of Neurobehaviour module works with TestClient app (app + modules) with the purpose of integrate callings to Neurobehaviour module when the user interacts with Helios chat.</p>
 
 <p> <br>
-<img src="./doc/module01.png" alt="HELIOS app integration" />
+<img src="https://raw.githubusercontent.com/helios-h2020/h.extension-NeuroBehaviouralClassifier/master/doc/module01.png" alt="HELIOS app integration" />
 </p>
 <br>
 <p>Please follow the next steps to integrate Neurobehaviour module into your app.</p>
@@ -40,7 +40,7 @@
 <code>implementation project(":neurobehaviour")</code>
 
 <p> <br>
-<img src="./doc/Neurobehaviour-Classes.png" alt="HELIOS Neuro-behavioral classifier module" />
+<img src="https://raw.githubusercontent.com/helios-h2020/h.extension-NeuroBehaviouralClassifier/master/doc/Neurobehaviour-Classes.png" alt="HELIOS Neuro-behavioral classifier module" />
 </p>
 
 <p>In order to test all features of Neurobehavioral module, you will need to modify some files in TestClient app folder. Please follow <a href="doc/testclient-files.md" title="testclient app files">these steps</a>.</p>
@@ -186,10 +186,10 @@ abiFilters "arm64-v8a", "x86"
 <p>Module view in Android Studio</p>
 
 <p style="margin: 20px; margin-left: 40px; margin-bottom: 40px; valingn: top">
-	<img src="./doc/module01.png" alt="HELIOS Neuro-behavioral classifier module" style="margin-left: 20px" />
+	<img src="https://raw.githubusercontent.com/helios-h2020/h.extension-NeuroBehaviouralClassifier/master/doc/module01.png" alt="HELIOS Neuro-behavioral classifier module" style="margin-left: 20px" />
 </p>
 <p style="margin: 20px; margin-left: 140px; margin-bottom: 40px; valingn: top">
-	<img src="./doc/Neurobehaviour-Classes02.png" alt="HELIOS Neuro-behavioral classifier module" style="margin-left: 20px" />
+	<img src="https://raw.githubusercontent.com/helios-h2020/h.extension-NeuroBehaviouralClassifier/master/doc/Neurobehaviour-Classes02.png" alt="HELIOS Neuro-behavioral classifier module" style="margin-left: 20px" />
 </p>
 
 <ul>
@@ -201,6 +201,49 @@ abiFilters "arm64-v8a", "x86"
     <li><a href="doc/classes-imageanalysis.md" title="Image analysis class">Sentiment analysis Class</a></li>
 </ul>
 
+<h2></h2>
+<h2>Sentiment analysis class</h2>
+
+<h3>Image analysis</h3>
+
+<p>This class performs a sentimental analysis of each image sent by user using Helios chat. Using deep learning models, this module extracts:</p>
+
+<ul>
+    <li>Number of faces</li>
+    <li>Sentiment of each face: happy, fear, anger...</li>
+    <li>Score of each face sentimental analysis</li>
+</ul>
+
+<p>Results are saved in a text file and are drawn over the image:</p>
+
+<p><img src="https://raw.githubusercontent.com/helios-h2020/h.extension-NeuroBehaviouralClassifier/master/doc/image-analysis.jpg" alt="image analysis" /></p>
+
+<h3>Text analysis</h3>
+
+<p>This class performs too a sentimental analysis of each text sent by user in Helios chat. Using deep learning models, this function extracts:</p>
+
+<ul>
+	<li>Text translation from any language to english using Google API</li>
+	<li>Tags for each word of text</li>
+	<li>Result of sentiment analysis of text. Positive / negative and score</li>
+</ul>
+
+```java
+public class SentimentalAnalysis extends AppCompatActivity {
+   public void runThread(final Context context, final String fileName, final HeliosMessageListener messageListener, final HeliosTopic topic, final HeliosMessage message)
+   public int realImageWidth(String resource)
+   private String getExtension(String word)
+   private void textAnalysis (Context context, String message, HeliosMessageListener messageListener, HeliosTopic topic)
+   private void pythonAnalysis (Context context, String script, String picture, Float scale, ImageView imageView, HeliosMessageListener messageListener, HeliosTopic topic)
+   private void paintingImage(PyObject squares, PyObject emotions, PyObject scores, String imageResource, Float scale, ImageView imageView, Context context, HeliosMessageListener messageListener, HeliosTopic topic)
+   public String getDate(long time)
+   private void saveImageData (Context context, int numFaces, String emotionsData, String scoreData)
+   private void saveTextData (Context context, PyObject origText, PyObject engText, PyObject tags, PyObject emotions) 
+   private String extractList(List<PyObject> list)
+   private void saveAudioData (Context context, String audioData)
+}
+```
+
 
 <h2> </h2>
 <h2>Neurobehaviour module storage</h2>
@@ -209,11 +252,11 @@ abiFilters "arm64-v8a", "x86"
 
 <p>Design of Neurobehavioral module database:</p>
 
-<img src="doc/NeurbDatabase.png" alt="Android SQLite database">
+<img src="https://raw.githubusercontent.com/helios-h2020/h.extension-NeuroBehaviouralClassifier/master/doc/NeurbDatabase.png" alt="Android SQLite database">
 
 <p>SQLite + Room database implementation</p>
 
-<img src="doc/RoomDatabase.PNG" alt="Room database implementation">
+<img src="https://raw.githubusercontent.com/helios-h2020/h.extension-NeuroBehaviouralClassifier/master/doc/RoomDatabase.PNG" alt="Room database implementation">
 
     
 <h2> </h2>
@@ -223,7 +266,7 @@ abiFilters "arm64-v8a", "x86"
 
 <p>Instrumented unit tests for Neurobehaviour module in:</p>
 
-<img src="doc/AndroidTesting-Path.png" alt="Android testing path">
+<img src="https://raw.githubusercontent.com/helios-h2020/h.extension-NeuroBehaviouralClassifier/master/doc/AndroidTesting-Path.png" alt="Android testing path">
 
 <p> </p>
 <p>Info about Android instrumented unit tests:</p>
@@ -233,12 +276,12 @@ abiFilters "arm64-v8a", "x86"
 
 <p>Results of unit tests for NeurobehaviourListener class:</p>
 
-<img src="doc/AndroidTesting.png" alt="Results for NeurobehaviourListener class">
+<img src="https://raw.githubusercontent.com/helios-h2020/h.extension-NeuroBehaviouralClassifier/master/doc/AndroidTesting.png" alt="Results for NeurobehaviourListener class">
 
 <p> </p>
 <p>Results of unit tests for Acceleration class:</p>
 
-<img src="doc/AndroidTesting-Acceleration.png" alt="Results for Acceleration class">
+<img src="https://raw.githubusercontent.com/helios-h2020/h.extension-NeuroBehaviouralClassifier/master/doc/AndroidTesting-Acceleration.png" alt="Results for Acceleration class">
     
 <h2> </h2>
 <h2>Running the module</h2>
